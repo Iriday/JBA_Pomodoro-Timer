@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         // init buttons
-        val timer = findViewById<TimerView>(R.id.textView)
+        val timer = findViewById<TimerView>(R.id.timerView)
         findViewById<Button>(R.id.startButton).setOnClickListener { timer.start() }
         findViewById<Button>(R.id.resetButton).setOnClickListener { timer.reset() }
     }
