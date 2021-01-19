@@ -17,6 +17,7 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private var currSeconds = state.seconds
     private var timer: Timer? = null
     private val rect = RectF()
+    private val STROKE_WIDTH = 30f
 
     private val timerPaint = Paint().apply {
         color = Color.DKGRAY
@@ -27,6 +28,8 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private val arcPaint = Paint().apply {
         color = state.color
         isAntiAlias = true
+        style = Paint.Style.STROKE
+        strokeWidth = STROKE_WIDTH
     }
 
     private fun startTimer() {
@@ -60,13 +63,13 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        rect.set(0f, 0f, width.toFloat(), height.toFloat())
+        rect.set(STROKE_WIDTH, STROKE_WIDTH, width.toFloat() - STROKE_WIDTH, height.toFloat() - STROKE_WIDTH)
         val arcSweepAngle = when (state) {
             WAITING, FINISHED -> state.arcStep
             WORKING, RESTING -> state.arcStep * (state.seconds - currSeconds)
         }
 
-        canvas.drawArc(rect, 270f, arcSweepAngle, true, arcPaint)
+        canvas.drawArc(rect, 270f, arcSweepAngle, false, arcPaint)
         canvas.drawText("00:0$currSeconds", width / 2f, height / 2f, timerPaint)
     }
 }
