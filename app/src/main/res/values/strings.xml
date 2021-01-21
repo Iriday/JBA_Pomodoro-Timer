@@ -2,4 +2,9 @@
     <string name="app_name">Pomodoro Timer</string>
     <string name="start">Start</string>
     <string name="reset">Reset</string>
+    <string name="work_time">Work time:</string>
+    <string name="rest_time">Rest time:</string>
+    <string name="seconds">Seconds:</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>
