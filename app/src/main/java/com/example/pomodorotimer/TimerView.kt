@@ -11,13 +11,17 @@ import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import com.example.pomodorotimer.TimerState.*
 
-class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
+class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs), SettingsFragment.PositiveBtn {
     private var state = WAITING
-    private var rounds = 5
-    private var currSeconds = state.seconds
+    private val defaultRounds = 5
+    private var rounds = defaultRounds
+    private var workTime = 5
+    private var restTime = 3
+    private var currSeconds = workTime
     private var timer: Timer? = null
     private val rect = RectF()
-    private val STROKE_WIDTH = 30f
+    private var arcStep = 360f / workTime
+    private val arcWidth = 30f
 
     private val timerPaint = Paint().apply {
         color = Color.DKGRAY
@@ -29,7 +33,7 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
         color = state.color
         isAntiAlias = true
         style = Paint.Style.STROKE
-        strokeWidth = STROKE_WIDTH
+        strokeWidth = arcWidth
     }
 
     private fun startTimer() {
@@ -49,13 +53,23 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private fun changeState(state: TimerState) {
         timer?.cancel()
         this.state = state
-        currSeconds = state.seconds
+        currSeconds = when (state) {
+            WAITING, WORKING -> workTime
+            RESTING -> restTime
+            FINISHED -> 0
+        }
+        arcStep = when (state) {
+            WAITING -> 0f
+            WORKING, RESTING -> 360f / currSeconds
+            FINISHED -> 360f
+        }
         arcPaint.color = state.color
+
         post { invalidate() }
     }
 
     fun start() {
-        rounds = 5
+        rounds = defaultRounds
         startTimer()
     }
 
@@ -63,13 +77,22 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        rect.set(STROKE_WIDTH, STROKE_WIDTH, width.toFloat() - STROKE_WIDTH, height.toFloat() - STROKE_WIDTH)
+        rect.set(arcWidth, arcWidth, width.toFloat() - arcWidth, height.toFloat() - arcWidth)
         val arcSweepAngle = when (state) {
-            WAITING, FINISHED -> state.arcStep
-            WORKING, RESTING -> state.arcStep * (state.seconds - currSeconds)
+            WAITING, FINISHED -> arcStep
+            WORKING -> arcStep * (workTime - currSeconds)
+            RESTING -> arcStep * (restTime - currSeconds)
         }
 
         canvas.drawArc(rect, 270f, arcSweepAngle, false, arcPaint)
-        canvas.drawText("00:0$currSeconds", width / 2f, height / 2f, timerPaint)
+        canvas.drawText(currSeconds.toTime(), width / 2f, height / 2f, timerPaint)
+    }
+
+    override fun clicked(workTime: Int?, restTime: Int?) {
+        workTime?.let { this.workTime = it }
+        restTime?.let { this.restTime = it }
+        changeState(WAITING)
     }
 }
+
+fun Int.toTime() = "${(this / 60).toString().padStart(2, '0')}:${(this % 60).toString().padStart(2, '0')}"

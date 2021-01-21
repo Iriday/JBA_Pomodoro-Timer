@@ -11,7 +11,9 @@ class MainActivity : AppCompatActivity() {
 
         // init buttons
         val timer = findViewById<TimerView>(R.id.timerView)
+        val settings = SettingsFragment(timer)
         findViewById<Button>(R.id.startButton).setOnClickListener { timer.start() }
         findViewById<Button>(R.id.resetButton).setOnClickListener { timer.reset() }
+        findViewById<Button>(R.id.settingsButton).setOnClickListener { settings.show(supportFragmentManager, "settings dialog") }
     }
 }
