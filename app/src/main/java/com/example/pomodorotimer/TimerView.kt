@@ -15,8 +15,8 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
     private var state = WAITING
     private val defaultRounds = 5
     private var rounds = defaultRounds
-    private var workTime = 5
-    private var restTime = 3
+    private var workTime = 1800 // 30 min
+    private var restTime = 300 // 5 min
     private var currSeconds = workTime
     private var timer: Timer? = null
     private val rect = RectF()
