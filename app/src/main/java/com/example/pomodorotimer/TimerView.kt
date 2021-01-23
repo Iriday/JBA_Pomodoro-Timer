@@ -26,7 +26,7 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
     private val timerPaint = Paint().apply {
         color = Color.DKGRAY
         isAntiAlias = true
-        textSize = 50f
+        textSize = 40f
         textAlign = Paint.Align.CENTER
     }
     private val arcPaint = Paint().apply {
@@ -95,4 +95,7 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
     }
 }
 
-fun Int.toTime() = "${(this / 60).toString().padStart(2, '0')}:${(this % 60).toString().padStart(2, '0')}"
+fun Int.toTime() : String = StringBuilder()
+    .append((this / 3600).toString().padStart(2, '0')).append(":")
+    .append((this % 3600 / 60).toString().padStart(2, '0')).append(":")
+    .append((this % 60).toString().padStart(2, '0')).toString()
