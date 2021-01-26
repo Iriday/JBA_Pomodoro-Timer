@@ -7,6 +7,8 @@ import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import java.util.*
 import kotlin.concurrent.fixedRateTimer
 import com.example.pomodorotimer.TimerState.*
@@ -35,6 +37,14 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
         style = Paint.Style.STROKE
         strokeWidth = arcWidth
     }
+    private val restNotification = NotificationCompat.Builder(context)
+        .setSmallIcon(R.mipmap.ic_launcher)
+        .setContentTitle("You need a rest!!!")
+        .setContentText("It's time to stop")
+        .setAutoCancel(true)
+        .build()
+    private var restNotificationId = 99009901
+
 
     private fun startTimer() {
         if (rounds == 0) {
@@ -64,6 +74,9 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
             FINISHED -> 360f
         }
         arcPaint.color = state.color
+
+        if (state == RESTING || state == FINISHED)
+            NotificationManagerCompat.from(context).notify(restNotificationId++, restNotification)
 
         post { invalidate() }
     }
@@ -95,7 +108,7 @@ class TimerView(context: Context, attrs: AttributeSet?) : View(context, attrs), 
     }
 }
 
-fun Int.toTime() : String = StringBuilder()
+fun Int.toTime(): String = StringBuilder()
     .append((this / 3600).toString().padStart(2, '0')).append(":")
     .append((this % 3600 / 60).toString().padStart(2, '0')).append(":")
     .append((this % 60).toString().padStart(2, '0')).toString()
